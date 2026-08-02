@@ -1,0 +1,45 @@
+id = "herdr-space-diffstat"
+name = "Space Diffstat"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Reports added, modified and deleted line counts for each space's git checkout as sidebar metadata tokens"
+platforms = ["macos", "linux"]
+
+# Spawns the watcher, which polls git and reports workspace metadata. One-shot,
+# as herdr requires: it returns as soon as the watcher is up.
+[[startup]]
+command = ["bin/startup"]
+
+# Safety net. If the watcher ever dies, the next new space brings it back; when
+# one is already running this is a no-op.
+[[events]]
+on = "workspace.created"
+command = ["bin/startup"]
+
+[[actions]]
+id = "refresh"
+title = "Space diffstat: refresh now"
+description = "Recount every space immediately"
+contexts = ["global", "workspace"]
+command = ["bin/herdr-space-diffstat", "once"]
+
+[[actions]]
+id = "restart"
+title = "Space diffstat: restart watcher"
+description = "Restart the background watcher (use after editing the config)"
+contexts = ["global"]
+command = ["bin/herdr-space-diffstat", "restart"]
+
+[[actions]]
+id = "stop"
+title = "Space diffstat: stop and clear"
+description = "Stop the watcher and take the counts off the sidebar"
+contexts = ["global"]
+command = ["bin/herdr-space-diffstat", "stop", "--clear"]
+
+[[actions]]
+id = "status"
+title = "Space diffstat: status"
+description = "Show whether the watcher is running"
+contexts = ["global"]
+command = ["bin/herdr-space-diffstat", "status"]

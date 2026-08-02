@@ -1,0 +1,46 @@
+# Defaults for herdr-space-diffstat.
+# Override any of these in ~/.config/herdr/herdr-space-diffstat.yml
+# (only the keys you want to change — the rest fall back to this file).
+
+config:
+  # What goes in front of each number. ASCII by default because it renders in
+  # any font; swap in Nerd Font glyphs if you have one — see the README.
+  added-icon: "+"
+  modified-icon: "~"
+  deleted-icon: "-"
+
+  # Between the icon and the number. Try " " for "+ 38".
+  icon-gap: ""
+
+  # Leave a count out of the sidebar when it is zero. herdr drops a token with
+  # no value along with its separator, and hides the row when every token in it
+  # is empty — so a clean checkout shows nothing at all.
+  hide-zero: true
+
+  # Treat an added and a deleted line in the same hunk as one line rewritten.
+  # Turn this off and nothing is ever called modified: the added and deleted
+  # counts become exactly git's own insertions and deletions.
+  pair-modified: true
+
+  # Count lines in files git does not track yet as additions. New files are
+  # most of what an agent writes, so this is on.
+  include-untracked: true
+
+  # Untracked files above this size are skipped rather than read line by line.
+  untracked-max-bytes: 1048576
+
+  # Seconds between passes. Nothing on the herdr side reports a file changing,
+  # so this is how quickly edits show up. Events (an agent finishing a turn, a
+  # space opening) bring a pass forward regardless.
+  poll-interval: 5
+
+  # How long herdr keeps the numbers after we stop reporting them. 0 derives it
+  # from poll-interval. This is what makes a killed watcher take its numbers
+  # with it instead of leaving stale ones on screen.
+  ttl-ms: 0
+
+  # Give up on a git invocation after this many seconds.
+  git-timeout: 10
+
+  # Token names, as they appear in your herdr config: $diff_added and friends.
+  token-prefix: "diff"
