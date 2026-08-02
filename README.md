@@ -2,7 +2,7 @@
 
 Line counts under every [herdr](https://herdr.dev) space. Each space that sits
 in a git checkout gets a row of its own showing how many lines have been added,
-modified and deleted — three counts, three colours, right under the space name.
+modified and deleted — three counts, right under the space name.
 
 ```
  ●  open_source
@@ -59,13 +59,14 @@ Then tell herdr where to put the numbers, in `~/.config/herdr/config.toml`:
 rows = [
   ["state_icon", "workspace"],
   ["branch", "git_status"],
-  [
-    { token = "$diff_added",    fg = "#a6e3a1" },
-    { token = "$diff_modified", fg = "#f9e2af" },
-    { token = "$diff_deleted",  fg = "#f38ba8" },
-  ],
+  ["$diff_added", "$diff_modified", "$diff_deleted"],
 ]
 ```
+
+That form takes the sidebar's own text colour, so it suits whatever theme you
+run without another thought. To colour the counts, see [Colours](#colours) —
+and read it before pasting hex from a palette, because the obvious choice is
+wrong half the time.
 
 Apply both:
 
@@ -97,6 +98,51 @@ collides with something else you report.
 Put them wherever you like — beside the branch rather than under it, or in the
 agent rows. They are ordinary herdr metadata tokens; this plugin has no opinion
 about placement beyond what your config says.
+
+## Colours
+
+Left alone, the counts inherit the sidebar's text colour from your herdr theme
+and follow it anywhere — light, dark, or something you wrote yourself. The `+`,
+`~` and `-` icons are what tell the three apart, so nothing is lost by leaving
+them uncoloured. It is the only form that cannot break.
+
+To colour them, `fg` takes a hex literal:
+
+```toml
+  [
+    { token = "$diff_added",    fg = "#3d8f2a" },
+    { token = "$diff_modified", fg = "#e07b1a" },
+    { token = "$diff_deleted",  fg = "#cf4767" },
+  ],
+```
+
+Three things about how herdr handles this, worth knowing before you pick:
+
+- **`fg` is hex only** — `#RGB` or `#RRGGBB`. Named colours (`green`) and
+  `rgb(r,g,b)` are both rejected, even though herdr's `[theme]` section accepts
+  them; the restriction is specific to sidebar tokens. `bold` and `dim`
+  booleans are also accepted.
+- **There is no per-theme value.** One literal serves every theme you use, so
+  with `auto_switch = true` it has to work on both flavours at once.
+- **A bad `fg` takes the whole block with it.** herdr reports `data did not
+  match any variant of untagged enum RawSidebarToken` and falls back to the
+  default rows — you lose all three rows, not just the token you mistyped.
+  `herdr config check` catches it before you go looking.
+
+The second point is the one that bites, because the obvious colours are the
+wrong ones. Catppuccin Mocha's pastels are built for Mocha's near-black
+background and all but vanish on Latte's near-white one:
+
+| Colour                 | on Mocha | on Latte |
+| ---------------------- | -------- | -------- |
+| `#a6e3a1` mocha green  | 11.0:1   | 1.3:1    |
+| `#f9e2af` mocha yellow | 12.9:1   | 1.1:1    |
+| `#f38ba8` mocha red    | 7.1:1    | 2.1:1    |
+
+Yellow at 1.1:1 is white text on white. If your terminal follows the system
+appearance, reach for mid-tones that clear roughly 2.5:1 against both ends
+rather than either flavour's own palette — the three in the snippet above
+manage 4.0/5.5/3.7 on Mocha and 3.6/2.7/3.9 on Latte.
 
 ## Configuration
 
